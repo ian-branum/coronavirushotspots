@@ -34,14 +34,16 @@ def extract_hhi(fn="./data/raw/Census/HH_income.csv"):
     df['state'] = df['Geographic Area Name'].str.split(",",expand=True,)[1]
     df = df.apply(strip_state, axis=1)
     df['sc'] = df['state'] + ':' + df['county']
-    return df[[
+    ret = df[[
         'sc',
-        'state', 
-        'county',
+        #'state', 
+        #'county',
         'Estimate!!Households!!Total',
         'Estimate!!Households!!Median income (dollars)',
         'Estimate!!Households!!Mean income (dollars)'
     ]]
+    ret.columns = ['sc', 'households', 'mean_hhi', 'median_hhi']
+    return ret
 
 def extract_public_transport(fn="./data/raw/Census/lots_of_census_data.csv"):
     df = pd.read_csv(fn)
@@ -49,12 +51,15 @@ def extract_public_transport(fn="./data/raw/Census/lots_of_census_data.csv"):
     df['state'] = df['Geographic Area Name'].str.split(",",expand=True,)[1]
     df = df.apply(strip_state, axis=1)
     df['sc'] = df['state'] + ':' + df['county']
-    return df[[
+    ret = df[[
         'sc',
-        'state', 
-        'county',
+        #'state', 
+        #'county',
         'Estimate!!Total!!Workers 16 years and over!!MEANS OF TRANSPORTATION TO WORK!!Public transportation (excluding taxicab)'
     ]]
+    ret.columns = ['sc', 'percent_commuter']
+    ret.fillna(0)
+    return ret
 
 def extract_edu(fn="./data/raw/Census/edu.csv"):
     df = pd.read_csv(fn)
@@ -62,26 +67,35 @@ def extract_edu(fn="./data/raw/Census/edu.csv"):
     df['state'] = df['Geographic Area Name'].str.split(",",expand=True,)[1]
     df = df.apply(strip_state, axis=1)
     df['sc'] = df['state'] + ':' + df['county']
-    return df[[
+    ret = df[[
         'sc',
-        'state', 
-        'county',
+        #'state', 
+        #'county',
         'Estimate!!Total!!Population 25 years and over',
-        'Estimate!!Male!!Population 25 years and over',
+        #'Estimate!!Male!!Population 25 years and over',
         'Estimate!!Percent!!Population 25 years and over!!High school graduate (includes equivalency)',
-        'Estimate!!Percent!!Population 25 years and over!!Some college, no degree',
-        'Estimate!!Percent!!Population 25 years and over!!Associate\'s degree',
+        #'Estimate!!Percent!!Population 25 years and over!!Some college, no degree',
+        #'Estimate!!Percent!!Population 25 years and over!!Associate\'s degree',
         'Estimate!!Percent!!Population 25 years and over!!Bachelor\'s degree',
         'Estimate!!Percent!!Population 25 years and over!!Graduate or professional degree',
-        'Estimate!!Percent!!Population 25 years and over!!Bachelor\'s degree or higher',
         'Estimate!!Total!!Population 25 years and over!!Population 65 years and over',
-        'Estimate!!Total!!Population 25 years and over!!Population 65 years and over!!Bachelor\'s degree or higher',
-        'Estimate!!Percent!!Population 25 years and over!!Population 65 years and over!!Bachelor\'s degree or higher',
-        'Estimate!!Total!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone',
-        'Estimate!!Total!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone!!Bachelor\'s degree or higher',
-        'Estimate!!Percent!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone!!Bachelor\'s degree or higher',
-        'Estimate!!Percent!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone, not Hispanic or Latino!!Bachelor\'s degree or higher'     
+        #'Estimate!!Total!!Population 25 years and over!!Population 65 years and over!!Bachelor\'s degree or higher',
+        #'Estimate!!Percent!!Population 25 years and over!!Population 65 years and over!!Bachelor\'s degree or higher',
+        #'Estimate!!Total!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone',
+        #'Estimate!!Total!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone!!Bachelor\'s degree or higher',
+        #'Estimate!!Percent!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone!!Bachelor\'s degree or higher',
+        #'Estimate!!Percent!!RACE AND HISPANIC OR LATINO ORIGIN BY EDUCATIONAL ATTAINMENT!!White alone, not Hispanic or Latino!!Bachelor\'s degree or higher'     
     ]]
+    ret.columns = [
+        'sc', 
+        'pop_over_25', 
+        'hs', 
+        'ba_plus',
+        'ma_plus',
+        'pop_over_65'
+    ]
+    return ret
+
 
 def extract_housing(fn="./data/raw/Census/housing.csv"):
     df = pd.read_csv(fn)
@@ -89,20 +103,29 @@ def extract_housing(fn="./data/raw/Census/housing.csv"):
     df['state'] = df['Geographic Area Name'].str.split(",",expand=True,)[1]
     df = df.apply(strip_state, axis=1)
     df['sc'] = df['state'] + ':' + df['county']
-    return df[[
+    ret = df[[
         'sc',
-        'state', 
-        'county',
+        #'state', 
+        #'county',
         'Estimate!!VALUE!!Owner-occupied units!!Median (dollars)',
         'Estimate!!GROSS RENT!!Occupied units paying rent!!Median (dollars)',
-        'Percent Estimate!!HOUSING OCCUPANCY!!Total housing units',
-        'Estimate!!HOUSING OCCUPANCY!!Total housing units!!Occupied housing units',
-        'Percent Estimate!!HOUSING OCCUPANCY!!Total housing units!!Occupied housing units',
-        'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!1-unit, detached',
-        'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!5 to 9 units',
-        'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!10 to 19 units',
+        #'Percent Estimate!!HOUSING OCCUPANCY!!Total housing units',
+        #'Estimate!!HOUSING OCCUPANCY!!Total housing units!!Occupied housing units',
+        #'Percent Estimate!!HOUSING OCCUPANCY!!Total housing units!!Occupied housing units',
+        #'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!1-unit, detached',
+        #'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!5 to 9 units',
+        #'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!10 to 19 units',
         'Percent Estimate!!UNITS IN STRUCTURE!!Total housing units!!20 or more units'
     ]]
+    ret.fillna(0)
+    ret.columns = [
+        'sc', 
+        'median_house_price', 
+        'median_rent', 
+        'percent_big_buildings'
+    ]
+    return ret
+
 
 def fix_state_abbr(row):
     row['state'] = get_state(row['state_abbr'])
@@ -115,8 +138,8 @@ def extract_election(fn="./data/raw/US_County_Level_Election_Results_08-16/2016_
     df['sc'] = df['state'] + ':' + df['county']
     return df[[
         'sc',
-        'state', 
-        'county',
+        #'state', 
+        #'county',
         'per_dem',
         'per_gop'
     ]]
@@ -158,10 +181,28 @@ def calc_intl_arrivals_index(lat, lon, threshold, airports_df):
         dist = mpu.haversine_distance((lat, lon), (alat, alon))
         #print('{} is {} km away'.format(airport['airport'], dist))
         if dist < threshold:
-            intl += int(airport['international'])
-            domestic += int(airport['domestic'])
+            divisor = 1 #(dist - 20)**2
+            intl += int(airport['international'])/divisor
+            domestic += int(airport['domestic'])/divisor
             airports.append(airport['airport'])
-    return intl, domestic, airports
+    return float(intl), float(domestic), airports
+
+def calc_intl_arrivals_index2(lat, lon, threshold, airports_df):
+    domestic = 1
+    intl = 1
+    airports = []
+    for i, airport in airports_df.iterrows():
+        #print(airport)
+        alat = airport['lat']
+        alon = airport['lon']
+        dist = mpu.haversine_distance((lat, lon), (alat, alon))
+        #print('{} is {} km away'.format(airport['airport'], dist))
+        if dist < threshold:
+            divisor = dist 
+            intl += int(airport['international'])/divisor
+            domestic += int(airport['domestic'])/divisor
+            airports.append(airport['airport'])
+    return float(intl), float(domestic), airports    
         
 def build_intl_arrivals_index_df(counties_df, airports_df, threshold):
     res = pd.DataFrame(columns=['sc', 'international', 'domestic', 'airports'])
@@ -170,6 +211,12 @@ def build_intl_arrivals_index_df(counties_df, airports_df, threshold):
         res.loc[i] = [county['sc'], intl, domestic, airports]
     return res
  
+def build_intl_arrivals_index_df2(counties_df, airports_df, threshold):
+    res = pd.DataFrame(columns=['sc', 'international', 'domestic', 'airports'])
+    for i, county in counties_df.iterrows():
+        intl, domestic, airports = calc_intl_arrivals_index2(county['Lat'], float(county['Lon']), threshold, airports_df)
+        res.loc[i] = [county['sc'], intl, domestic, airports]
+    return res
 
 ###### Supposed to be in util.py :( 
 
