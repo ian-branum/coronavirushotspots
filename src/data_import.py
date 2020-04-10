@@ -187,7 +187,7 @@ def calc_intl_arrivals_index(lat, lon, threshold, airports_df):
             airports.append(airport['airport'])
     return float(intl), float(domestic), airports
 
-def calc_intl_arrivals_index2(lat, lon, threshold, airports_df):
+def calc_intl_arrivals_index2(lat, lon, threshold1, threshold2, airports_df):
     domestic = 1
     intl = 1
     airports = []
@@ -197,10 +197,17 @@ def calc_intl_arrivals_index2(lat, lon, threshold, airports_df):
         alon = airport['lon']
         dist = mpu.haversine_distance((lat, lon), (alat, alon))
         #print('{} is {} km away'.format(airport['airport'], dist))
-        if dist < threshold:
-            divisor = dist 
-            intl += int(airport['international'])/divisor
-            domestic += int(airport['domestic'])/divisor
+        if dist < threshold2:
+            if dist < threshold1:
+                #print('here')
+                intl += int(airport['international'])
+                domestic += int(airport['domestic'])
+            else:
+                factor = (threshold2 - dist)/(threshold2-threshold1)
+                intl += factor*int(airport['international'])
+                domestic += factor*int(airport['domestic'])
+                #print('dist: {}, t1: {}, t2: {}, factor: {}'.format(dist, threshold1, threshold2, factor))
+                #print('n: {}, d: {}'.format(threshold2 - dist, threshold2 - threshold1))
             airports.append(airport['airport'])
     return float(intl), float(domestic), airports    
         
@@ -211,10 +218,10 @@ def build_intl_arrivals_index_df(counties_df, airports_df, threshold):
         res.loc[i] = [county['sc'], intl, domestic, airports]
     return res
  
-def build_intl_arrivals_index_df2(counties_df, airports_df, threshold):
+def build_intl_arrivals_index_df2(counties_df, airports_df, threshold1, threshold2):
     res = pd.DataFrame(columns=['sc', 'international', 'domestic', 'airports'])
     for i, county in counties_df.iterrows():
-        intl, domestic, airports = calc_intl_arrivals_index2(county['Lat'], float(county['Lon']), threshold, airports_df)
+        intl, domestic, airports = calc_intl_arrivals_index2(county['Lat'], float(county['Lon']), threshold1, threshold2, airports_df)
         res.loc[i] = [county['sc'], intl, domestic, airports]
     return res
 
