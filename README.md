@@ -1,7 +1,7 @@
 ![Covid-19](./img/covid-19-1330px.jpg)
 <!--image from CDC's web page -->
 # Characteristics of Coronavirus Hotspots
-Ian Branum -- *10 April 2019*
+Ian Branum -- *10 April 2020*
 
 ## Table of Contents
 
@@ -42,7 +42,7 @@ For counties I needed the name, state, population, and lat/lon of the center. Fo
 >![Table1](./img/counties.png)
 
 ### Airports Data
-Finally, as one potential hypothesis related to the effects of international arrivals on case rates, I need airport data. This was painful. I wanted both the lat/lon of the airport and the number of incoming international arrivals. I was forced to fuse two data sets, one a list of the [Top 100 Us Airports](http://www.fi-aeroweb.com/Top-100-US-Airports.html) in 2017 by passenger arrivals and one from [ourairports.com](https://ourairports.com/data/airports.csv), which is an extract from the ICAO data set containing lat/lon of each airport. I would have preferred to pull directly from ICAO, but they wanted money. I fused the two together for the top 65 international airports in the United States, Table 4 shows the result. 
+Finally, as one potential hypothesis related to the effects of international arrivals on case rates, I need airport data. This was painful. I wanted both the lat/lon of the airport and the number of incoming international arrivals. I was forced to fuse two data sets, one a list of the [Top 100 US Airports](http://www.fi-aeroweb.com/Top-100-US-Airports.html) in 2017 by passenger arrivals and one from [ourairports.com](https://ourairports.com/data/airports.csv), which is an extract from the ICAO data set containing lat/lon of each airport. I would have preferred to pull directly from ICAO, but they wanted money. I fused the two together for the top 65 international airports in the United States, all those that receive more than 10,000 international arrivals per year, Table 4 shows the result. 
 
 > Table 4 - Top Airports List
 >![Table1](./img/airports.png)
@@ -123,8 +123,10 @@ All three Mann-Whitney tests yielded microscopic p-values as follows:
 In all three cases I must reject the null hypothesis and embrace the observation that counties in close proximity to international airports have a higher Coronavirus case rate per 100,000 than those not. Likely the feature that I developed is deeply confounded with other variables, but there is nonetheless a strong correlation.  
 
 ## Next Steps
+While the above analysis is interesting, it addresses only current Coronavirus cases per 100,000, not the growth rate. The next step will be to anlyze what factors influence the spread of Coronavirus. An initial attempt at polynomial regression suggests that the growth rate is easily modeled after the fact (See Chart 5) -- can we also predict its growth rate in the future?
 
-
+> Chart 5 - 4 Degree Polynomial fitted to CA cases
+>![Table1](./img/poly.png)
 
 
 
